@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Falling Shapes</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: black;
+        }
+        .shape {
+            position: absolute;
+            top: -10px;
+            animation: fall linear infinite;
+            box-shadow: 0 0 10px 5px rgba(255, 255, 255, 0.5);
+        }
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <script>
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min)) + min;
+        }
+
+        function lightenColor(color, percent) {
+            const num = parseInt(color.replace("#", ""), 16),
+                  amt = Math.round(2.55 * percent),
+                  R = (num >> 16) + amt,
+                  G = (num >> 8 & 0x00FF) + amt,
+                  B = (num & 0x0000FF) + amt;
+            return "#" + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 + 
+                          (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 + 
+                          (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1).toUpperCase();
+        }
+
+        function createShape() {
+            const shapes = ['normal', 'circle', 'rectangle'];
+            const colors = [
+                '#FF5733', '#33FF57', '#3357FF', '#F3FF33', '#FF33F3',
+                '#FF69B4', '#FFD700', '#ADFF2F', '#00FFFF', '#FF4500',
+                '#DA70D6', '#87CEEB', '#32CD32', '#FFB6C1', '#FFA07A'
+            ];
+            const shapeType = shapes[getRandomInt(0, shapes.length)];
+            const color = colors[getRandomInt(0, colors.length)];
+            const brightColor = lightenColor(color, 40);  // 亮度更高的颜色
+
+            const shape = document.createElement('div');
+            shape.className = 'shape';
+            shape.style.backgroundColor = color;
+            shape.style.boxShadow = `0 0 10px ${brightColor}, 0 0 20px ${brightColor}, 0 0 30px ${brightColor}`;
+
+            const size = getRandomInt(5, 15);  // 缩小了形状的大小
+            shape.style.width = size + 'px';
+            shape.style.height = size + 'px';
+            shape.style.left = getRandomInt(0, window.innerWidth) + 'px';
+            shape.style.animationDuration = getRandomInt(5, 15) + 's';
+            shape.style.transform = `rotate(${getRandomInt(0, 360)}deg)`;
+
+            switch (shapeType) {
+                case 'circle':
+                    shape.style.borderRadius = '50%';
+                    break;
+                case 'rectangle':
+                    shape.style.width = size * 2 + 'px';
+                    break;
+                default:
+                    break;
+            }
+
+            document.body.appendChild(shape);
+
+            shape.addEventListener('animationend', () => {
+                shape.remove();
+            });
+        }
+
+        setInterval(createShape, 200);  // 增加了形状的生成频率
+    </script>
+</body>
+</html>
